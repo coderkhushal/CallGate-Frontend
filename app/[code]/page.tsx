@@ -6,18 +6,14 @@ import { usePathname, useRouter } from 'next/navigation'
 import { deleteRoom, findRoom } from '@/actions/room'
 import { Socket, io } from "socket.io-client"
 import { useUser } from '@clerk/nextjs'
-import { Toaster } from "@/components/ui/toaster"
 
 import { useJoinContext } from '@/context/JoinContext'
-import { toast } from '@/components/ui/use-toast'
-import { ToastAction, ToastDescription } from '@radix-ui/react-toast'
-import { checkUserAllowed } from '@/actions/user'
-import { set } from 'zod'
+
 const SERVER = process.env.NEXT_PUBLIC_SERVER
 const CallingPage = () => {
   const user = useUser()
 
-  const {  isAdmin , currentuser, roomid, secure, setsecure} = useJoinContext()
+  const {  isAdmin , currentuser, roomid, secure, setsecure, setisAdmin} = useJoinContext()
   const [socket_chat, setsocket_chat] = useState<Socket | null>(null)
   const [socket_join_admin, setsocket_join_admin] = useState<Socket | null>(null)
   const [loading, setloading] = useState<boolean>(false)
@@ -47,8 +43,16 @@ const CallingPage = () => {
       }
     })
 
-    _socket_chat.on("ENDED", ()=>{
+    _socket_chat.on("ENDCALL", ()=>{
       setsecure(false)
+      if(isAdmin){
+        
+      }
+      else{
+        alert("admin ended the call for everyone")
+        router.push("join")
+      }
+      setisAdmin(false)
     })
 
 
@@ -118,11 +122,18 @@ const CallingPage = () => {
 
   // for admin to end the call
   const endCall = async () => {
+    if(!socket_chat){
+      alert("wait for 2-3 seconds , sockets are not initialised")
+      return;
+    }
     // End call logic here
     const roomcode = pathname.split("/")[1]
 
     let result = await deleteRoom(roomcode)
     if (result) {
+      socket_chat?.emit("ENDCALL", {room : roomcode})
+      setsecure(false)
+      setisAdmin(false)
       router.push("/main")
     }
     else {

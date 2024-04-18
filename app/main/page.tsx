@@ -36,7 +36,7 @@ const joinSchema = z.object({
 export default function Home() {
     const user = useUser()
     const router = useRouter()
-    const {setroomid, setisAdmin} = useJoinContext()
+    const { setroomid, setisAdmin } = useJoinContext()
     // 1. Define your form.
     const form = useForm<z.infer<typeof joinSchema>>({
         resolver: zodResolver(joinSchema),
@@ -55,18 +55,35 @@ export default function Home() {
             alert("Please login first")
             return
         }
-        axios.get(`${SERVER}/room/newroom`).then(async (res) => {
-            const admin = await findUser(user.user?.emailAddresses[0].emailAddress)
-            console.log(admin)
-            if (!admin) {
-                alert("user not found in database")
-                return;
-            }
-            let roomid = await createroom({ code: res.data, admin: admin })
-            setroomid(roomid)
-            setisAdmin(true)
-            router.push(res.data)
-        })
+
+        try {
+            axios.get(`${SERVER}/room/newroom`).then(async (res) => {
+
+                if (res.status == 429) {
+                    alert("Too many requests, please try again later")
+                    return;
+                }
+                const admin = await findUser(user.user?.emailAddresses[0].emailAddress)
+                console.log(admin)
+                if (!admin) {
+                    alert("user not found in database")
+                    return;
+                }
+                let roomid = await createroom({ code: res.data, admin: admin })
+                setroomid(roomid)
+                setisAdmin(true)
+                router.push(res.data)
+
+
+            })
+        }
+        catch (err) {
+            console.log(err)
+            alert("some error occurred")
+        }
+
+
+
     }
     return (
         <div >
