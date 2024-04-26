@@ -6,6 +6,7 @@ import axios from "axios"
 import { UserButton, useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { gsap } from "gsap";
 import {
     Form,
     FormControl,
@@ -21,6 +22,7 @@ import { prisma } from "@/lib/db";
 import { findUser } from "@/actions/user";
 import { createroom } from "@/actions/room";
 import { useJoinContext } from "@/context/JoinContext";
+import Link from "next/link";
 
 
 
@@ -34,6 +36,7 @@ const joinSchema = z.object({
 
 /* eslint-disable @next/next/no-img-element */
 export default function Home() {
+
     const user = useUser()
     const router = useRouter()
     const { setroomid, setisAdmin } = useJoinContext()
@@ -86,32 +89,41 @@ export default function Home() {
 
     }
     return (
-        <div >
-            <UserButton />
-            <Button onClick={startcall}>
-                Start a call
+        <div className="w-full p-6 space-y-8">
+    <UserButton />
+    <Link href="/" className="text-black font-bold text-center w-full  hover:underline">
+        Home
+    </Link>
+    <Button onClick={startcall} className="w-full">
+        Start a call
+    </Button>
+
+    <Form {...form} >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+                control={form.control}
+                name="code"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Code</FormLabel>
+                        <FormControl>
+                            <Input
+                                placeholder="abcdefghi"
+                                {...field}
+                                className="w-full"
+                            />
+                        </FormControl>
+
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <Button type="submit" className="w-full">
+                Submit
             </Button>
+        </form>
+    </Form>
+</div>
 
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    <FormField
-                        control={form.control}
-                        name="code"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Code</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="abcdefghi" {...field} />
-                                </FormControl>
-
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <Button type="submit">Submit</Button>
-                </form>
-            </Form>
-
-        </div>
     );
 }
