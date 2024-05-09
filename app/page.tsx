@@ -27,3 +27,56 @@ const HomePage = () => {
 }
 
 export default HomePage
+
+/*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Video Streaming</title>
+</head>
+<body>
+    <video id="videoPlayer" controls autoplay></video>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const videoElement = document.getElementById('videoPlayer');
+        videoElement.controls = true;
+
+        // Event listener for receiving video data from the server
+        socket.on('videoData', (data) => {
+            appendVideoData(data);
+        });
+
+        // Function to append video data to the video element
+        function appendVideoData(data) {
+            // Convert received array buffer to Blob
+            const videoBlob = new Blob([data], { type: 'video/mp4' });
+
+            // Create a Blob URL for the video Blob
+            const videoBlobUrl = URL.createObjectURL(videoBlob);
+
+            // Check if video source exists, if not set it
+            if (!videoElement.src) {
+                videoElement.src = videoBlobUrl;
+            } else {
+                // Otherwise, append the new video data to the current source
+                const mediaSource = new MediaSource();
+                const sourceBuffer = mediaSource.addSourceBuffer('video/mp4');
+                
+                // Event listener for updating source buffer
+                sourceBuffer.addEventListener('updateend', () => {
+                    mediaSource.endOfStream();
+                    videoElement.src = URL.createObjectURL(mediaSource);
+                });
+
+                // Append new video data to source buffer
+                sourceBuffer.appendBuffer(data);
+            }
+        }
+    </script>
+</body>
+</html>
+
+*/

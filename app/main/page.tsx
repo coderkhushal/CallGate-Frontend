@@ -1,5 +1,4 @@
 "use client"
-import { Button } from "@/components/ui/button";
 import { z } from "zod"
 const SERVER = process.env.NEXT_PUBLIC_SERVER!
 import axios from "axios"
@@ -7,6 +6,17 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { gsap } from "gsap";
+import { Button } from "@/components/ui/button"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 import {
     Form,
     FormControl,
@@ -89,41 +99,69 @@ export default function Home() {
 
     }
     return (
-        <div className="w-full p-6 space-y-8">
-    <UserButton />
-    <Link href="/" className="text-black font-bold text-center w-full  hover:underline">
-        Home
-    </Link>
-    <Button onClick={startcall} className="w-full">
-        Start a call
-    </Button>
 
-    <Form {...form} >
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-                control={form.control}
-                name="code"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Code</FormLabel>
-                        <FormControl>
-                            <Input
-                                placeholder="abcdefghi"
-                                {...field}
-                                className="w-full"
-                            />
-                        </FormControl>
+        <div className=" flex flex-col h-full justify-start space-y-8">
+            <div className=" p-6 bg-gray-200 h-1/3 flex flex-col  justify-between">
 
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-            <Button type="submit" className="w-full">
-                Submit
-            </Button>
-        </form>
-    </Form>
-</div>
+                <div className="flex  justify-between">
+
+                    <Link href="/" className="text-black font-bold text- hover:underline">
+                        Home
+                    </Link>
+                    <h1 className="text-4xl w-full text-center font-bold">Callgate</h1>
+                    <UserButton />
+                </div>
+
+                <div className="flex  justify-end space-x-5 px-10">
+
+                    <Button onClick={startcall} >
+                        Start a call
+                    </Button>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button variant="default">Join Room</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle>Join Call</DialogTitle>
+                                <DialogDescription>
+                                    Enter the 9 digit code
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <Form {...form} >
+                                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                                        <FormField
+                                            control={form.control}
+                                            name="code"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Code</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            placeholder="abcdefghi"
+                                                            {...field}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
+
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <Button type="submit" className="w-full">
+                                            Submit
+                                        </Button>
+                                    </form>
+                                </Form>
+                            </div>
+
+                        </DialogContent>
+                    </Dialog>
+
+                </div>
+            </div>
+        </div>
 
     );
 }
